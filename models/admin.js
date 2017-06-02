@@ -5,4 +5,12 @@ module.exports = {
   create: function create(admin) {
     return Admin.create(admin).exec();
   },
+
+  // 通过用户名获取用户信息
+  getAdminByName: function getAdminByName(name) {
+    return Admin
+      .findOne({ name })
+      .addCreatedAt()
+      .exec();
+  },
 };
