@@ -6,8 +6,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-const flash = require('connect-flash');
-const config = require('config-lite')(__dirname);
+const flash = require('connect-flash');  // 用来显示通知
+const config = require('config-lite')(__dirname); // config-lite 会根据环境变量（NODE_ENV）的不同从当前执行进程目录下的 config 目录加载不同的配置文件。
 
 const pkg = require('./package.json');
 
@@ -22,6 +22,7 @@ const app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -48,6 +49,26 @@ app.use(session({
 
 // flash 中间件，用来显示通知
 app.use(flash());
+
+// 处理表单以及文件上传的中间件 express-formidable
+app.use(require('express-formidable')({
+  uploadDir: path.join(__dirname, '/public/images'), // 上传文件目录
+  keepExtensions: true, // 保留后缀
+}));
+
+// 设置模板全局常量
+app.locals.biyesale = {
+  title: pkg.name,
+  description: pkg.description,
+};
+
+// 添加模板必须的三个常量
+app.use((req, res, next) => {
+  res.locals.admin = req.session.admin;
+  res.locals.success = req.flash('success').toString();
+  res.locals.error = req.flash('error').toString();
+  next();
+});
 
 app.use('/', index);
 app.use('/goods', goods);

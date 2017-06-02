@@ -7,7 +7,8 @@ const checkUserLogin = require('../middlewares/check').checkUserLogin;
 
 // GET /goods 所有用户或特定用户的商品列表
 router.get('/', (req, res, next) => {
-  res.send('商品信息');
+  res.render('goods');
+  // res.send('商品详情');
   // TODO:
 });
 
@@ -19,7 +20,7 @@ router.post('/', checkLogin, (req, res, next) => {
 
 // GET /goods/create 录入商品页
 router.get('/create', checkLogin, (req, res, next) => {
-  res.send(req.flash);
+  res.send(req.flash());
   // TODO:
 });
 

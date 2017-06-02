@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "body-parser": "~1.17.1",
+    "bootstrap-material-design": "^0.5.10",
     "config-lite": "^2.0.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^1.3.2",
