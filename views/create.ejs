@@ -1,0 +1,65 @@
+<%- include('header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <form class="form-horizontal" method="post" action="/goods" enctype="multipart/form-data">
+        <fieldset>
+          <legend>商品录入</legend>
+          <div class="form-group">
+            <label for="name" class="col-md-2 control-label">商品名称</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="name" placeholder="商品名称" name="name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="price" class="col-md-2 control-label">商品价格</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="price" placeholder="商品价格" name="price">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="desc" class="col-md-2 control-label">商品简介</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="desc" placeholder="商品简介" name="desc">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cover" class="col-md-2 control-label">商品图片</label>
+
+            <div class="col-md-10">
+              <input type="text" readonly="" class="form-control" placeholder="打开...">
+              <input type="file" id="cover" multiple="" name="cover">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="remain" class="col-md-2 control-label">商品数量</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="desc" placeholder="商品数量" name="remain">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-10 col-md-offset-2">
+              <input type="submit" class="btn btn-primary btn-lg btn-block btn-raised" value="提交">
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('footer') %>
+
+<!--
+  name: { type: 'string' },
+  desc: { type: 'string' },
+  price: { type: 'number' },
+  cover: { type: 'string' },
+  remain: { type: 'number' },
+  -->

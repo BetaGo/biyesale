@@ -1,27 +1,79 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
 
+const GoodsModel = require('../models/goods');
 const checkLogin = require('../middlewares/check').checkLogin;
 const checkUserLogin = require('../middlewares/check').checkUserLogin;
 
 // GET /goods 所有用户或特定用户的商品列表
 router.get('/', (req, res, next) => {
   res.render('goods');
-  // res.send('商品详情');
-  // TODO:
 });
 
 // POST /goods 录入一件商品
 router.post('/', checkLogin, (req, res, next) => {
-  res.send(req.flash());
-  // TODO:
+  const author = req.session._id;
+  const name = req.fields.name;
+  const desc = req.fields.desc;
+  let price = req.fields.price;
+  let remain = req.fields.remain;
+  const cover = req.files.cover.path.split(path.sep).pop();
+
+  // 校验参数
+  try {
+    if (!name.length) {
+      throw new Error('请填写商品名称');
+    }
+    if (!desc.length) {
+      throw new Error('请填写商品简介');
+    }
+    if (!price.length) {
+      throw new Error('请填写商品价格');
+    }
+    if (Number.isNaN(Number.parseFloat(price, 10))) {
+      throw new Error('商品价格必须为数字');
+    }
+    if (!remain.length) {
+      throw new Error('请填写商品数量');
+    }
+    if (Number.isNaN(Number.parseInt(remain, 10))) {
+      throw new Error('商品数量必须为整数');
+    }
+    if (!req.files.cover.name) {
+      throw new Error('请上传商品图片');
+    }
+  } catch (e) {
+    req.flash('error', e.message);
+    res.redirect('back');
+    return;
+  }
+
+  let goods = {
+    author,
+    name,
+    desc,
+    cover,
+    price: Number.parseFloat(price, 10),
+    remain: Number.parseInt(remain, 10),
+  };
+
+  GoodsModel.create(goods)
+    .then((result) => {
+      // 此处 goods 是插入 mongodb 后的值，包含 _id
+      goods = result.ops[0];
+      req.flash('success', '录入成功');
+      // 录入成功后跳转到该商品详情页
+      res.redirect(`/goods/${goods._id}`);
+    })
+    .catch(next);
 });
 
 // GET /goods/create 录入商品页
 router.get('/create', checkLogin, (req, res, next) => {
-  res.send(req.flash());
-  // TODO:
+  res.render('create');
 });
 
 // GET /goos/:goodsId 某件商品详情页
