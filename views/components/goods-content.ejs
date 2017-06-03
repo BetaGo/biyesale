@@ -1,0 +1,30 @@
+<div class="thumbnail">
+  <img src="/images/cover/<%= goods.cover %>" alt="<%= goods.name %>">
+  <div class="caption">
+    <h3><%= goods.name %></h3>
+    <p><%= goods.desc %></p>
+    <p><%= goods.price %></p>
+    <p><%= goods.remian %> </p>
+
+    <!-- TODO: -->
+    <% if(admin && goods.author._id && admin._id.toString() === goods.author._id.toString()) { %>
+      <a href="javascript:void(0)" class="btn btn-raised btn-primary">Primary</a>
+      <a href="javascript:void(0)" class="btn btn-raised btn-danger">Warning</a>
+    <% } else { %>
+      <div class="list-group">
+        <div class="list-group-item">
+          <div class="row-picture">
+            <img class="circle" src="/images/avatar/<%= goods.author.avatar %>" alt="icon">
+          </div>
+          <div class="row-content">
+            <h4 class="list-group-item-heading"><%= goods.author.name %></h4>
+
+            <p class="list-group-item-text"><%= goods.author.bio %></p>
+          </div>
+        </div>
+        <div class="list-group-separator"></div>
+      </div>
+    <% } %>
+  </div>
+</div>
+

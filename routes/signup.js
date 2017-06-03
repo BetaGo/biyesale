@@ -11,14 +11,32 @@ const checkNotLogin = require('../middlewares/check').checkNotLogin;
 const router = express.Router();
 
 // 配置 multer 处理 multipart/form-data 类型的表单数据.
+const extensionRegExp = /\.\w+$/;
+const imgTypeArray = ['.png', '.jpg', '.gif', '.svg', '.jpeg'];
 const storage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, path.resolve(__dirname, '../public/images/avatar'));
   },
   filename(req, file, cb) {
-    cb(null, `${file.fieldname}-${req.body.name}`);
+    cb(null, `${file.fieldname}-${req.body.name}${extensionRegExp.exec(file.originalname)[0]}`);
   },
 });
+/*
+function fileFilter(req, file, cb) {
+  // 这个函数应该调用 `cb` 用boolean值来
+  // 指示是否应接受该文件
+  if (['.png', '.jpg', '.gif', '.svg', '.jpeg'].indexOf(extensionRegExp.exec(file.originalname)) !== -1) {
+    // 接受这个文件，使用`true`, 像这样:
+    cb(null, true);
+  } else {
+    // 拒绝这个文件，使用`false`, 像这样:
+    cb(null, false);
+  }
+  // 如果有问题，你可以总是这样发送一个错误:
+  // cb(new Error('I don\'t have a clue!'));
+}
+const upload = multer({ storage, fileFilter });
+*/
 const upload = multer({ storage });
 
 // GET /signup 注册页
@@ -50,6 +68,10 @@ router.post('/', checkNotLogin, upload.single('avatar'), (req, res, next) => {
     }
     if (!req.file.filename) {
       throw new Error('缺少头像');
+    }
+    if (imgTypeArray.indexOf(extensionRegExp.exec(req.file.originalname)[0]) === -1) {
+      // 检查 avatar 是否为图片
+      throw new Error("请上传后缀名为'.png', '.jpg', '.gif', '.svg', '.jpeg' 的图片");
     }
     if (password.length < 6) {
       throw new Error('密码至少 6 个字符');

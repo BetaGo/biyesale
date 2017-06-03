@@ -1,3 +1,13 @@
 <%- include('header') %>
-这是商品列表页
+
+<div class="container-fluid">
+  <div class="row">
+    <% goods.forEach(function(goods) { %>
+      <div class="col-xs-6 col-sm-4 col-md-3">
+        <%- include('components/goods-content', { goods: goods }) %>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
 <%- include('footer') %>

@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const multer = require('multer'); // // 仅用来处理 multipart/form-data 类型的表单数据.
 
 const router = express.Router();
 
@@ -8,19 +9,57 @@ const GoodsModel = require('../models/goods');
 const checkLogin = require('../middlewares/check').checkLogin;
 const checkUserLogin = require('../middlewares/check').checkUserLogin;
 
+// 配置 multer 处理 multipart/form-data 类型的表单数据.
+const extensionRegExp = /\.\w+$/;
+const imgTypeArray = ['.png', '.jpg', '.gif', '.svg', '.jpeg'];
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, path.resolve(__dirname, '../public/images/cover'));
+  },
+  filename(req, file, cb) {
+    cb(null, `${file.fieldname}-${Date.now()}${extensionRegExp.exec(file.originalname)[0]}`);
+  },
+});
+const upload = multer({ storage });
+/*
+function fileFilter(req, file, cb) {
+  // 这个函数应该调用 `cb` 用boolean值来
+  // 指示是否应接受该文件
+  if (['.png', '.jpg', '.gif', '.svg', '.jpeg'].indexOf(extensionRegExp.exec(file.originalname)) !== -1) {
+    // 接受这个文件，使用`true`, 像这样:
+    cb(null, true);
+  } else {
+    // 拒绝这个文件，使用`false`, 像这样:
+    cb(null, false);
+  }
+  // 如果有问题，你可以总是这样发送一个错误:
+  // cb(new Error('I don\'t have a clue!'));
+}
+const upload = multer({ storage, fileFilter });
+*/
+
+
 // GET /goods 所有用户或特定用户的商品列表
 router.get('/', (req, res, next) => {
-  res.render('goods');
+  const author = req.query.author;
+
+  GoodsModel.getGoods(author)
+    .then((goods) => {
+      res.render('goods', {
+        goods,
+      });
+    })
+    .catch(next);
 });
 
 // POST /goods 录入一件商品
-router.post('/', checkLogin, (req, res, next) => {
-  const author = req.session._id;
-  const name = req.fields.name;
-  const desc = req.fields.desc;
-  let price = req.fields.price;
-  let remain = req.fields.remain;
-  const cover = req.files.cover.path.split(path.sep).pop();
+router.post('/', checkLogin, upload.single('cover'), (req, res, next) => {
+  const author = req.session.admin._id;
+  const name = req.body.name;
+  const desc = req.body.desc;
+  const price = req.body.price;
+  const remain = req.body.remain;
+  const cover = req.file.path.split(path.sep).pop();
 
   // 校验参数
   try {
@@ -42,10 +81,16 @@ router.post('/', checkLogin, (req, res, next) => {
     if (Number.isNaN(Number.parseInt(remain, 10))) {
       throw new Error('商品数量必须为整数');
     }
-    if (!req.files.cover.name) {
+    if (!req.file.filename) {
       throw new Error('请上传商品图片');
     }
+    if (imgTypeArray.indexOf(extensionRegExp.exec(req.file.originalname)[0]) === -1) {
+      // 检查 avatar 是否为图片
+      throw new Error("请上传后缀名为'.png', '.jpg', '.gif', '.svg', '.jpeg' 的图片");
+    }
   } catch (e) {
+    // 上传失败，异步删除图片
+    fs.unlink(req.file.path);
     req.flash('error', e.message);
     res.redirect('back');
     return;
@@ -56,7 +101,7 @@ router.post('/', checkLogin, (req, res, next) => {
     name,
     desc,
     cover,
-    price: Number.parseFloat(price, 10),
+    price: Number.parseFloat(price, 10), // 转换成数字类型
     remain: Number.parseInt(remain, 10),
   };
 
@@ -68,7 +113,12 @@ router.post('/', checkLogin, (req, res, next) => {
       // 录入成功后跳转到该商品详情页
       res.redirect(`/goods/${goods._id}`);
     })
-    .catch(next);
+    .catch((e) => {
+      // 录入失败，异步删除上传的图片
+      fs.unlink(req.file.path);
+      req.flash('error', '录入失败');
+      next(e);
+    });
 });
 
 // GET /goods/create 录入商品页
