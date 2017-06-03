@@ -128,26 +128,77 @@ router.get('/create', checkLogin, (req, res, next) => {
 
 // GET /goos/:goodsId 某件商品详情页
 router.get('/:goodsId', (req, res, next) => {
-  res.send(req.flash());
-  // TODO:
+  const goodsId = req.params.goodsId;
+
+  GoodsModel.getGoodsById(goodsId)
+    .then((result) => {
+      const goods = [result];
+      if (!goods[0]) {
+        throw new Error('该商品不存在');
+      }
+
+      res.render('goods', {
+        goods,
+      });
+    })
+    .catch(next);
 });
 
 // GET /goods/:goodsId/edit 修改某件商品信息页
 router.get('/:goodsId/edit', checkLogin, (req, res, next) => {
-  res.send(req.flash());
-  // TODO:
+  const goodsId = req.params.goodsId;
+  const author = req.session.admin._id;
+
+  GoodsModel.getRawGoodsById(goodsId)
+    .then((goods) => {
+      if (!goods) {
+        throw new Error('该文章不存在');
+      }
+      if (author.toString() !== goods.author._id.toString()) {
+        throw new Error('权限不足');
+      }
+      res.render('edit', {
+        goods,
+      });
+    });
 });
 
 // POST /goods/:goodsId/edit 提交修改后的商品信息
 router.post('/:goodsId/edit', checkLogin, (req, res, next) => {
-  res.send(req.flash());
-  // TODO:
+  const goodsId = req.params.goodsId;
+  const author = req.session.admin._id;
+  const name = req.body.name;
+  const desc = req.body.desc;
+  const price = req.body.price;
+  const remain = req.body.remain;
+  const cover = req.file.path.split(path.sep).pop();
+
+  GoodsModel.updateGoodsById(goodsId, author, {
+    author,
+    name,
+    desc,
+    cover,
+    price: Number.parseFloat(price, 10), // 转换成数字类型
+    remain: Number.parseInt(remain, 10),
+  })
+  .then(() => {
+    req.flash('success', '编辑商品信息成功');
+  })
+  .catch(next);
 });
 
 // GET /goods/:goodsId/remove 删除某件商品
 router.get('/:goodsId/remove', checkLogin, (req, res, next) => {
-  res.send(req.flash());
-  // TODO:
+  const goodsId = req.params.goodsId;
+  const author = req.session.admin._id;
+
+  GoodsModel.delGoodsById(goodsId, author)
+    .then(() => {
+      req.flash('success', '成功删除商品');
+      // 删除成功后跳转到主页
+      res.redirect('/goods');
+    })
+    .catch(next);
 });
 
 // POST /goods/:goodsId/own 用户购买某件商品

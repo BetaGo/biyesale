@@ -1,0 +1,82 @@
+<%- include('header') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="list-group">
+        <div class="list-group-item">
+          <div class="row-picture">
+            <img class="circle" src="/images/avatar/<%= goods.author.avatar %>" alt="icon">
+          </div>
+          <div class="row-content">
+            <h4 class="list-group-item-heading"><%= goods.author.name %></h4>
+
+            <p class="list-group-item-text"><%= goods.author.bio %></p>
+          </div>
+        </div>
+        <div class="list-group-separator"></div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <form class="form-horizontal" method="post" action="/goods/<%= goods._id %>" enctype="multipart/form-data">
+        <fieldset>
+          <legend>商品录入</legend>
+          <div class="form-group">
+            <label for="name" class="col-md-2 control-label">商品名称</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="name" placeholder="商品名称" name="name" value="<%= goods.name %>">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="price" class="col-md-2 control-label">商品价格</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="price" placeholder="商品价格" name="price" value="<%= goods.price %>">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="desc" class="col-md-2 control-label">商品简介</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="desc" placeholder="商品简介" name="desc" value="<%= goods.desc %>">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cover" class="col-md-2 control-label">商品图片</label>
+
+            <div class="col-md-10">
+              <input type="file" id="cover" multiple="" name="cover">
+
+              <div class="input-group">
+                <input type="text" readonly="" class="form-control" placeholder="打开.../如果为空，则默认采用之前上传的图片">
+                <span class="input-group-btn input-group-sm">
+                  <button type="button" class="btn btn-fab btn-fab-mini">
+                    <i class="material-icons">attach_file</i>
+                  </button>
+                </span>
+              </div>
+              <span class="help-block">选择你要录入的商品的图片</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="remain" class="col-md-2 control-label">商品数量</label>
+
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="desc" placeholder="商品数量" name="remain" value="goods.remain">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-10 col-md-offset-2">
+              <input type="submit" class="btn btn-primary btn-lg btn-block btn-raised" value="提交">
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('footer') %>
