@@ -11,40 +11,61 @@
             <label for="name" class="col-md-2 control-label">用户名</label>
 
             <div class="col-md-10">
-              <input type="text" class="form-control" id="name" placeholder="用户名" name="name">
+              <input type="text" class="form-control" id="name" placeholder="用户名" name="name" required>
+              <span class="help-block">名字请限制在 1-10 个字符</span>
             </div>
           </div>
           <div class="form-group">
             <label for="password" class="col-md-2 control-label">密码</label>
 
             <div class="col-md-10">
-              <input type="password" class="form-control" id="password" placeholder="密码" name="password">
+              <input type="password" class="form-control" id="password" placeholder="密码" name="password" required>
+              <span class="help-block">密码至少 6 个字符</span>
             </div>
           </div>
           <div class="form-group">
             <label for="repassword" class="col-md-2 control-label">重复密码</label>
 
             <div class="col-md-10">
-              <input type="password" class="form-control" id="repassword" placeholder="重复密码" name="repassword">
+              <input type="password" class="form-control" id="repassword" placeholder="重复密码" name="repassword" required>
             </div>
           </div>
           <div class="form-group">
             <label for="gender" class="col-md-2 control-label">性别</label>
 
             <div class="col-md-10">
-              <select id="gender" class="form-control" name="gender">
+              <select id="gender" class="form-control" name="gender" required>
                 <option value="m">男</option>
                 <option value="f">女</option>
                 <option value="x">保密</option>
               </select>
             </div>
           </div>
+          <!--
           <div class="form-group">
-            <label for="inputFile" class="col-md-2 control-label">头像</label>
+            <label for="avatar" class="col-md-2 control-label">头像</label>
 
             <div class="col-md-10">
               <input type="text" readonly="" class="form-control" placeholder="打开...">
-              <input type="file" id="inputFile" multiple="" name="avatar">
+              <input type="file" id="avatar" multiple="" name="avatar" required>
+              <span class="help-block">选择你喜欢的图片作为头像</span>
+            </div>
+          </div>
+          -->
+          <div class="form-group">
+            <label for="avatar" class="col-md-2 control-label">头像</label>
+            <div class="col-md-10">
+              <input type="file" id="avatar" multiple="" name="avatar" required>
+
+              <div class="input-group">
+                <input type="text" readonly="" class="form-control" placeholder="打开...">
+                <span class="input-group-btn input-group-sm">
+                  <button type="button" class="btn btn-fab btn-fab-mini">
+                    <i class="mdi-editor-attach-file"></i>
+                  </button>
+                </span>
+              </div>
+              <span class="help-block">选择你喜欢的图片作为头像</span>
             </div>
           </div>
           <div class="form-group">
@@ -52,7 +73,7 @@
 
             <div class="col-md-10">
               <textarea class="form-control" rows="3" id="textArea" name="bio"></textarea>
-              <span class="help-block">输入一些个人简介信息，例如负责的项目内容，所在部门等等。</span>
+              <span class="help-block">输入一些个人简介信息，例如负责的项目内容，所在部门等等。请限制在 1-30 个字符</span>
             </div>
           </div>
 

@@ -2,11 +2,24 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const sha1 = require('sha1');
+const multer = require('multer'); // 仅用来处理 multipart/form-data 类型的表单数据.
+
 
 const AdminModel = require('../models/admin');
 const checkNotLogin = require('../middlewares/check').checkNotLogin;
 
 const router = express.Router();
+
+// 配置 multer 处理 multipart/form-data 类型的表单数据.
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, path.resolve(__dirname, '../public/images/avatar'));
+  },
+  filename(req, file, cb) {
+    cb(null, `${file.fieldname}-${req.body.name}`);
+  },
+});
+const upload = multer({ storage });
 
 // GET /signup 注册页
 router.get('/', checkNotLogin, (req, res, next) => {
@@ -15,13 +28,14 @@ router.get('/', checkNotLogin, (req, res, next) => {
 
 
 // POST /signup 注册
-router.post('/', checkNotLogin, (req, res, next) => {
-  const name = req.fields.name;
-  const gender = req.fields.gender;
-  const bio = req.fields.bio;
-  const avatar = req.files.avatar.path.split(path.sep).pop();
-  const password = req.fields.password;
-  const repassword = req.fields.repassword;
+router.post('/', checkNotLogin, upload.single('avatar'), (req, res, next) => {
+  const name = req.body.name;
+  const gender = req.body.gender;
+  const bio = req.body.bio;
+  const avatar = req.file.path.split(path.sep).pop();
+  const password = req.body.password;
+  const repassword = req.body.repassword;
+
 
   // 校验参数
   try {
@@ -34,7 +48,7 @@ router.post('/', checkNotLogin, (req, res, next) => {
     if (!(bio.length >= 1 && bio.length <= 30)) {
       throw new Error('个人简介请限制在 1-30 个字符');
     }
-    if (!req.files.avatar.name) {
+    if (!req.file.filename) {
       throw new Error('缺少头像');
     }
     if (password.length < 6) {
@@ -45,9 +59,10 @@ router.post('/', checkNotLogin, (req, res, next) => {
     }
   } catch (e) {
     // 注册失败，异步删除上传的头像
-    fs.unlink(req.files.avatar.path);
+    fs.unlink(req.file.path);
     req.flash('error', e.message);
-    return res.redirect('/signup');
+    res.redirect('/signup');
+    return;
   }
 
   // 明文密码加密
@@ -77,7 +92,7 @@ router.post('/', checkNotLogin, (req, res, next) => {
     })
     .catch((e) => {
       // 注册失败，异步删除上传的头像
-      fs.unlink(req.files.avatar.path);
+      fs.unlink(req.file.path);
       // 用户名被占用则跳回注册页，而不是错误页
       if (e.message.match('E11000 duplicate key')) {
         req.flash('error', '用户名已被注册');

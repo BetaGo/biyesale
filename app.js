@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const flash = require('connect-flash');  // 用来显示通知
 const config = require('config-lite')(__dirname); // config-lite 会根据环境变量（NODE_ENV）的不同从当前执行进程目录下的 config 目录加载不同的配置文件。
+const bodyParser = require('body-parser');
 
 const pkg = require('./package.json');
 
@@ -25,6 +26,8 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // session 中间件
@@ -45,11 +48,6 @@ app.use(session({
 // flash 中间件，用来显示通知
 app.use(flash());
 
-// 处理表单以及文件上传的中间件 express-formidable
-app.use(require('express-formidable')({
-  uploadDir: path.join(__dirname, '/public/images'), // 上传文件目录
-  keepExtensions: true, // 保留后缀
-}));
 
 // 设置模板全局常量
 app.locals.biyesale = {

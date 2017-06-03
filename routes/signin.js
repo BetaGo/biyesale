@@ -13,8 +13,13 @@ router.get('/', checkNotLogin, (req, res, next) => {
 
 // POST /signin 登录
 router.post('/', checkNotLogin, (req, res, next) => {
-  const name = req.fields.name;
-  const password = req.fields.password;
+  const name = req.body.name;
+  const password = req.body.password;
+
+  // if (req.body) {
+  //   req.flash('success', 'have body');
+  //   return;
+  // }
 
   AdminModel.getAdminByName(name)
     .then((admin) => {
