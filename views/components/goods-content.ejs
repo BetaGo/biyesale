@@ -8,8 +8,8 @@
 
 
     <% if(admin && goods.author._id && admin._id.toString() === goods.author._id.toString()) { %>
-      <a href="javascript:void(0)" class="btn btn-raised btn-primary">编辑</a>
-      <a href="javascript:void(0)" class="btn btn-raised btn-danger">删除</a>
+      <a href="/goods/<%= goods._id %>/edit" class="btn btn-raised btn-primary">编辑</a>
+      <a href="/goods/<%= goods._id %>/remove" class="btn btn-raised btn-danger">删除</a>
     <% } else { %>
       <div class="list-group">
         <div class="list-group-item">

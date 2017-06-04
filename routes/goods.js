@@ -164,27 +164,44 @@ router.get('/:goodsId/edit', checkLogin, (req, res, next) => {
 });
 
 // POST /goods/:goodsId/edit 提交修改后的商品信息
-router.post('/:goodsId/edit', checkLogin, (req, res, next) => {
+router.post('/:goodsId/edit', checkLogin, upload.single('cover'), (req, res, next) => {
   const goodsId = req.params.goodsId;
   const author = req.session.admin._id;
   const name = req.body.name;
   const desc = req.body.desc;
   const price = req.body.price;
   const remain = req.body.remain;
-  const cover = req.file.path.split(path.sep).pop();
-
-  GoodsModel.updateGoodsById(goodsId, author, {
-    author,
-    name,
-    desc,
-    cover,
-    price: Number.parseFloat(price, 10), // 转换成数字类型
-    remain: Number.parseInt(remain, 10),
-  })
-  .then(() => {
-    req.flash('success', '编辑商品信息成功');
-  })
-  .catch(next);
+  if (req.file && req.file.path) {
+    const cover = req.file.path.split(path.sep).pop();
+    GoodsModel.updateGoodsById(goodsId, author, {
+      author,
+      name,
+      desc,
+      cover,
+      price: Number.parseFloat(price, 10), // 转换成数字类型
+      remain: Number.parseInt(remain, 10),
+    })
+    .then(() => {
+      req.flash('success', '编辑商品信息成功');
+      // 编辑成功后跳转到上一页
+      res.redirect(`/goods/${goodsId}`);
+    })
+    .catch(next);
+  } else {
+    GoodsModel.updateGoodsById(goodsId, author, {
+      author,
+      name,
+      desc,
+      price: Number.parseFloat(price, 10), // 转换成数字类型
+      remain: Number.parseInt(remain, 10),
+    })
+    .then(() => {
+      req.flash('success', '编辑商品信息成功');
+      // 编辑成功后跳转到上一页
+      res.redirect(`/goods/${goodsId}`);
+    })
+    .catch(next);
+  }
 });
 
 // GET /goods/:goodsId/remove 删除某件商品
