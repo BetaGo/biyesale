@@ -1,6 +1,6 @@
 const express = require('express');
 
-const router = express.router();
+const router = express.Router();
 
 const GoodsModel = require('../models/goods');
 
@@ -20,3 +20,6 @@ router.get('/goods', (req, res, next) => {
 router.post('/goods',(req, res, next) => {
   // TODO:
 });
+
+module.exports = router;
+
