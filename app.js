@@ -16,6 +16,9 @@ const signin = require('./routes/signin');
 const signup = require('./routes/signup');
 const signout = require('./routes/signout');
 
+// api
+const api = require('./routes/api');
+
 const app = express();
 
 // view engine setup
@@ -69,6 +72,7 @@ app.use('/goods', goods);
 app.use('/signin', signin);
 app.use('/signup', signup);
 app.use('/signout', signout);
+app.use('/api', api);
 
 
 // catch 404 and forward to error handler
